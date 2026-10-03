@@ -60,6 +60,7 @@ class TheaterMode {
     document.addEventListener("pointermove", this.onPointerMove, {
       passive: true,
     });
+    document.addEventListener("fullscreenchange", this.onFullscreenChange);
 
     this.styleObserver.observe(this.$player, {
       attributes: true,
@@ -69,9 +70,20 @@ class TheaterMode {
 
   onTheaterRemoved() {
     document.removeEventListener("pointermove", this.onPointerMove);
+    document.removeEventListener("fullscreenchange", this.onFullscreenChange);
     this.$header?.removeEventListener("pointerleave", this.hideHeader);
     this.hideHeader();
   }
+
+  onFullscreenChange = () => {
+    if (document.fullscreenElement) return;
+
+    this.hideHeader();
+    setTimeout(() => {
+      if (this.$player.hasAttribute("theater"))
+        this.scrollToFullScreen(1000);
+    }, 100);
+  };
 
   onPointerMove = (event) => {
     if (
