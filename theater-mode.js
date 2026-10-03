@@ -1,8 +1,11 @@
+const HEADER_REVEAL_ZONE_HEIGHT = 8;
+
 class TheaterMode {
   constructor() {
     this.$player = null;
     this.$video = null;
     this.$navigationProgress = null;
+    this.$header = null;
 
     this.theaterObserver = this.createTheaterObserver();
     this.styleObserver = this.createStyleObserver();
@@ -18,11 +21,16 @@ class TheaterMode {
   createTheaterObserver() {
     return new MutationObserver((mutations) => {
       const theaterMutation = mutations.find(
-        (mutation) => mutation.oldValue == null
+        (mutation) => mutation.attributeName === "theater"
       );
 
-      if (theaterMutation?.target?.hasAttribute("theater"))
+      if (!theaterMutation) return;
+
+      if (theaterMutation.target.hasAttribute("theater")) {
         this.onTheaterAdded();
+      } else {
+        this.onTheaterRemoved();
+      }
     });
   }
 
@@ -36,8 +44,10 @@ class TheaterMode {
   // EVENTS
   //
   onPlayerLoaded() {
-    if (this.$player.hasAttribute("theater"))
+    if (this.$player.hasAttribute("theater")) {
+      this.onTheaterAdded();
       setTimeout(() => this.scrollToFullScreen(1000), 10);
+    }
 
     this.theaterObserver.observe(this.$player, {
       attributes: true,
@@ -47,11 +57,32 @@ class TheaterMode {
   }
 
   onTheaterAdded() {
+    this.$header = document.querySelector("#masthead-container");
+    this.$header?.addEventListener("pointerleave", this.hideHeader);
+    document.addEventListener("pointermove", this.onPointerMove, {
+      passive: true,
+    });
+
     this.styleObserver.observe(this.$player, {
       attributes: true,
       attributeFilter: ["style"],
     });
   }
+
+  onTheaterRemoved() {
+    document.removeEventListener("pointermove", this.onPointerMove);
+    this.$header?.removeEventListener("pointerleave", this.hideHeader);
+    this.hideHeader();
+  }
+
+  onPointerMove = (event) => {
+    if (event.clientY <= HEADER_REVEAL_ZONE_HEIGHT)
+      document.documentElement.setAttribute("data-theater-header-visible", "");
+  };
+
+  hideHeader = () => {
+    document.documentElement.removeAttribute("data-theater-header-visible");
+  };
 
   // HELPERS
   //
