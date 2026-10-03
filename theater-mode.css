@@ -2,6 +2,15 @@ body {
   overflow-anchor: none;
 }
 
+html:has(ytd-watch-flexy[theater]) {
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+html:has(ytd-watch-flexy[theater])::-webkit-scrollbar {
+  display: none;
+}
+
 #masthead-container:has(ytd-masthead[theater]) {
   position: absolute !important;
 }
