@@ -1,5 +1,3 @@
-const HEADER_REVEAL_ZONE_HEIGHT = 8;
-
 class TheaterMode {
   constructor() {
     this.$player = null;
@@ -76,7 +74,7 @@ class TheaterMode {
   }
 
   onPointerMove = (event) => {
-    if (event.clientY <= HEADER_REVEAL_ZONE_HEIGHT)
+    if (this.$header && event.clientY <= this.$header.offsetHeight)
       document.documentElement.setAttribute("data-theater-header-visible", "");
   };
 
