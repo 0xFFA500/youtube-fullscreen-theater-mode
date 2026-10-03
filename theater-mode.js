@@ -86,12 +86,21 @@ class TheaterMode {
   };
 
   onPointerMove = (event) => {
-    if (
-      this.$header &&
-      event.clientY <= this.$header.offsetHeight &&
-      !document.documentElement.hasAttribute("data-theater-header-visible")
-    )
-      document.documentElement.setAttribute("data-theater-header-visible", "");
+    if (!this.$header) return;
+
+    const isHeaderVisible = document.documentElement.hasAttribute(
+      "data-theater-header-visible"
+    );
+
+    if (event.clientY <= this.$header.offsetHeight) {
+      if (!isHeaderVisible)
+        document.documentElement.setAttribute(
+          "data-theater-header-visible",
+          ""
+        );
+    } else if (isHeaderVisible) {
+      this.hideHeader();
+    }
   };
 
   hideHeader = () => {
