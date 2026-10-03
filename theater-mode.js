@@ -74,7 +74,11 @@ class TheaterMode {
   }
 
   onPointerMove = (event) => {
-    if (this.$header && event.clientY <= this.$header.offsetHeight)
+    if (
+      this.$header &&
+      event.clientY <= this.$header.offsetHeight &&
+      !document.documentElement.hasAttribute("data-theater-header-visible")
+    )
       document.documentElement.setAttribute("data-theater-header-visible", "");
   };
 
